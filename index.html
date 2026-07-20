@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Surprise!</title>
+    <style>
+        /* Base Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .step-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        .step-container.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Buttons */
+        button {
+            background: #ff6b81;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        button:hover {
+            background: #ff4757;
+            transform: scale(1.05);
+        }
+
+        /* Step Specific Styling */
+        #step-2 h2 {
+            font-size: 4em;
+            color: #ff4757;
+            margin: 20px 0;
+        }
+        .gift-emoji {
+            font-size: 6em;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .gift-emoji:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff0;
+            top: -10px;
+            z-index: 100;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+            }
+        }
+        h1.birthday-text {
+            color: #ff4757;
+            font-size: 2.5em;
+            text-shadow: 2px 2px #ffb8b8;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STEP 1: WELCOME SCREEN -->
+    <div id="step-1" class="step-container active">
+        <h2>Hey Bestie! 👋</h2>
+        <p style="margin-top:15px; color:#555;">I built something special just for you. Are you ready for your surprise?</p>
+        <button onclick="goToStep(2)">Yes, let's see! ✨</button>
+    </div>
+
+    <!-- STEP 2: THE COUNTDOWN -->
+    <div id="step-2" class="step-container">
+        <h2>3</h2>
+        <p style="color:#555;">Unlocking your surprise in moments...</p>
+    </div>
+
+    <!-- STEP 3: THE GIFT BOX -->
+    <div id="step-3" class="step-container">
+        <h2>A Gift For You! 🎁</h2>
+        <p style="margin-top:10px; color:#555;">Click the box below to open it!</p>
+        <div class="gift-emoji" onclick="openGift()">🎁</div>
+    </div>
+
+    <!-- STEP 4: THE CELEBRATION STAGE -->
+    <div id="step-4" class="step-container">
+        <h1 class="birthday-text">🎉 Happy Birthday! 🎉</h1>
+        <p style="font-size: 1.2em; color: #333; font-weight: bold; margin-bottom: 10px;">To My Best Friend</p>
+        <p style="color:#666; line-height: 1.6;">Wishing you a fantastic day filled with love, laughter, and endless amounts of cake! You deserve the absolute best today! 🎂🍰</p>
+        <button onclick="spawnConfetti()">More Confetti! 🥳</button>
+    </div>
+
+    <script>
+        // Step Navigation Function
+        function goToStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.step-container').forEach(step => {
+                step.classList.remove('active');
+            });
+            // Show target step
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+            // Handle unique behavior for Step 2 (Countdown)
+            if (stepNumber === 2) {
+                runCountdown();
+            }
+        }
+
+        // Step 2 Countdown Logic
+        function runCountdown() {
+            let countdownElement = document.querySelector('#step-2 h2');
+            let timeLeft = 3;
+            
+            let timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    countdownElement.textContent = timeLeft;
+                } else {
+                    clearInterval(timer);
+                    goToStep(3); // Automatically switch to step 3 when done
+                }
+            }, 1000);
+        }
+
+        // Step 3 Gift Logic
+        function openGift() {
+            let gift = document.querySelector('.gift-emoji');
+            gift.textContent = '💥';
+            setTimeout(() => {
+                goToStep(4);
+                spawnConfetti(); // Kick off final step with confetti shower
+            }, 4000);
+        }
+
+        // Step 4 Confetti Effect
+        function spawnConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Randomly vary positioning, colors, and speeds
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.opacity = Math.random();
+                
+                document.body.appendChild(confetti);
+                
+                // Remove elements after they exit the screen to prevent lag
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+    </script>
+</body>
+</html>
